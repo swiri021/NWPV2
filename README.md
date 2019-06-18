@@ -2,8 +2,7 @@
 Method of Combined P-value to identify Differential Expressed Gene in dataset
 
 # Reference
-[Optimally weighted Z-test is a powerful method for combining probabilities in meta-analysis]
-(https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3135688/)
+[Optimally weighted Z-test is a powerful method for combining probabilities in meta-analysis](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3135688/)
 
 # Example :
 ```Python
