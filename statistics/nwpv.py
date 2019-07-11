@@ -40,7 +40,7 @@ class nwpv:
 
 	def __init__(self, df, test1, control):
 		st = STAT(df, test1, control)
-		assert test1 in df.columns.tolist() and control in df.columns.tolist(), "Some samples do not exist in DataFrame"
+		assert np.prod([x in df.columns.tolist() for x in test1]) and np.prod([x in df.columns.tolist() for x in control]), "Some samples do not exist in DataFrame"
 		assert len(test1)>=3 and len(control)>=3, "Too small size of samples(Control or Test)"
 
 		self.st_df = st.statistics_result()
