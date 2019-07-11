@@ -21,8 +21,6 @@ class STAT:
 
 	#######NULL distribution creator
 	def _md_test_null_dist_creator(self, control, test, perm=2):
-		#control = expr[test_samples[0]]
-		#test1 = expr[test_samples[1]]
 
 		c_index = control.columns.tolist()
 		t_index = test.columns.tolist()
@@ -42,12 +40,16 @@ class STAT:
 			n2_median = [total_df[n2].loc[g].median(skipna=True) for g in total_df.index.tolist()]
 			result = [n2_median[a]-n1_median[a] for a in range(len(n1_median))]
 			null_values.append(result)
+
+
+
 		null_values = list(itertools.chain(*null_values))
 		null_values = pd.DataFrame(data=null_values, columns=['values'])
 		return null_values
 
 	#######Median-test(Pvalue from null distribution)
 	def _get_pvalue(self, test_value, null_dist):
+
 		high_v = len(null_dist[null_dist['values']>test_value].index.tolist())
 		low_v = len(null_dist[null_dist['values']<test_value].index.tolist())
 
@@ -71,7 +73,6 @@ class STAT:
 		pv_arr = []
 		for x in test.index.tolist():
 			t, pv = stats.ttest_1samp(test.loc[x].values.tolist(), control.loc[x].values.tolist(), nan_policy='omit')
-			#print stats.ttest_1samp(test.loc[x].values.tolist(), control.loc[x].values.tolist())
 			pv_arr.append(pv[0])
 		result = pd.DataFrame(data=pv_arr, index=test.index, columns=['ttest_pvalue'])
 		return result
@@ -81,13 +82,12 @@ class STAT:
 		pv_arr = []
 		for x in test.index.tolist():
 			t, pv = stats.ranksums(test.loc[x].dropna().values.tolist(), control.loc[x].dropna().values.tolist())
-			#print stats.ttest_1samp(test.loc[x].values.tolist(), control.loc[x].values.tolist())
 			pv_arr.append(pv)
 		result = pd.DataFrame(data=pv_arr, index=test.index, columns=['ranksums_pvalue'])
 		return result
 
 	#######DataFrame Result
-	def statistics_result(self):
+	def statistics_result(self, type):
 		# Make null dist for median test
 		null_values = self._md_test_null_dist_creator(self.control, self.test1)
 		test_df_ar = self.test1.median(axis=1, skipna=True)-self.control.median(axis=1, skipna=True)
@@ -97,12 +97,22 @@ class STAT:
 		# Fold Change
 		test_df_ar['FC'] = self.test1.mean(axis=1, skipna=True)-self.control.mean(axis=1, skipna=True)
 
-		# Median test
-		test_df_ar['mtest_pvalue'] = test_df_ar['Med'].apply(lambda x : self._get_pvalue(x, null_values))
-		# T-test
-		test_df_ar['ttest_pvalue'] = self._ttest_ind_df(self.control, self.test1)
-		# Ranksums test
-		test_df_ar['ranksums_pvalue'] = self._ranksums_df(self.control, self.test1)
+
+		# Normal Case
+		if len(type)==3:
+			# Median test
+			test_df_ar['mtest_pvalue'] = test_df_ar['Med'].apply(lambda x : self._get_pvalue(x, null_values))
+			# T-test
+			test_df_ar['ttest_pvalue'] = self._ttest_ind_df(self.control, self.test1)
+			# Ranksums test
+			test_df_ar['ranksums_pvalue'] = self._ranksums_df(self.control, self.test1)
+
+		# In case of small samples
+		elif len(type)==2:
+			# Median test
+			test_df_ar['mtest_pvalue'] = test_df_ar['Med'].apply(lambda x : self._get_pvalue(x, null_values))
+			# T-test
+			test_df_ar['ttest_pvalue'] = self._ttest_ind_df(self.control, self.test1)
 
 		return test_df_ar
 
@@ -111,8 +121,3 @@ class STAT:
 		######Make control and test dataframe
 		self.test1 = df[test1]
 		self.control = df[control]
-
-
-
-
-
