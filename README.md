@@ -21,7 +21,7 @@ test = ['Sample1', 'Sample2', 'Sample3',....]
 control = ['SampleC1', 'SampleC2', 'SampleC3',....]
 
 #Call the class
-nwpv = nwpv(df, test, control)
+nwpv = nwpv_calculation(df, test, control)
 
 #Result
 print nwpv.get_result()
