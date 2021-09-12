@@ -2,7 +2,7 @@ from .statistics import STAT
 from scipy import stats
 import numpy as np
 
-class nwpv:
+class nwpv_calculation:
 
 	def _preprocessing(self, min_adj=1e-16, max_adj=0.9999999999999999):
 
